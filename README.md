@@ -2,7 +2,7 @@
 Snake game written in C that can be played in UNIX based terminals\
 Download the game using this command :
 ```
-https://github.com/efemantarci/snake-terminal.git
+git clone https://github.com/efemantarci/snake-terminal.git
 cd snake-terminal
 ```
 To play simply call :
