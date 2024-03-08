@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <time.h>
-#define CTRL_KEY(k) ((k) & 0x1f)
 
 struct stringBuffer{
     char *pointer;
@@ -60,10 +59,7 @@ struct EditorConfig{
 };
 
 struct EditorConfig E;
-void die(char *s){
-    perror(s);
-    exit(1);
-}
+
 void exitRawMode(){
     tcsetattr(STDIN_FILENO,TCSAFLUSH,&E.old_termios);
 }
@@ -80,9 +76,7 @@ void enterRawMode(){
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
 
-int drawBorders(struct stringBuffer *buffer){
-    //SCORE : 120
-    // 9 + scoreLength
+int drawScore(struct stringBuffer *buffer){
     char buf[12];
     snprintf(buf,12,"SCORE : %d",E.snakeSize);
     stringBufferAppend(buffer,(char *)buf,12);
@@ -90,7 +84,7 @@ int drawBorders(struct stringBuffer *buffer){
     return strlen(buf);
 }
 void draw(struct stringBuffer *buffer){
-    int scoreSize = drawBorders(buffer);
+    int scoreSize = drawScore(buffer);
     int y;
     for(int i = 0;i < E.snakeSize;i++){
         if(E.isDead && i == 0)continue;
