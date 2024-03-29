@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <time.h>
+#include <signal.h>
 
 struct stringBuffer{
     char *pointer;
@@ -59,6 +60,8 @@ struct EditorConfig{
 };
 
 struct EditorConfig E;
+// Global variable to track window size changes
+volatile sig_atomic_t windowSizeChanged = 0;
 
 void exitRawMode(){
     tcsetattr(STDIN_FILENO,TCSAFLUSH,&E.old_termios);
@@ -199,6 +202,19 @@ int getWindowSize(int *rows, int *cols){
 	}
 }
 
+void handleResize(){
+    getWindowSize(&E.screenrows,&E.screencols);
+    E.screen = (int **)realloc(E.screen, E.screenrows * sizeof(int *));
+    for(int i = 0;i < E.screenrows;i++){
+        E.screen[i] = (int *)realloc(E.screen[i], E.screencols * sizeof(int));
+    }
+}
+
+// Signal handler function for SIGWINCH
+void handleWindowSizeChange(int signum) {
+    windowSizeChanged = 1;
+}
+
 char editorReadKey(){
 	char c;
 	int num_bytes_read = read(STDIN_FILENO, &c, 1);
@@ -266,6 +282,8 @@ void init(){
     E.isDead = false;
     E.appleExist = false;
     srand(time(NULL));
+    // Register the signal handler for SIGWINCH
+    signal(SIGWINCH, handleWindowSizeChange);
 }
 
 /*** input ***/
@@ -329,6 +347,10 @@ int main(){
     init();
     while (1)
     {
+        if (windowSizeChanged) {
+            handleResize();
+            windowSizeChanged = 0;
+        }
         refreshScreen();
         if(!E.appleExist)addApple();
         editorProcessKeypress();
