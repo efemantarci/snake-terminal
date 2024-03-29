@@ -93,8 +93,8 @@ void draw(struct stringBuffer *buffer){
     char *endMessages[] = {"YOU ARE DEAD", "TO QUIT, PRESS 'q'","TO RESTART PRESS 'r'"};
     int endMessageSizes[] = {13,19,21};
     int endMessageCount = 3;
-    for (y = 0; y < E.screenrows - 1; y++) {
-        for(int x = 0;x < E.screencols - 1;x++){
+    for (y = 0; y < E.screenrows; y++) {
+        for(int x = 0;x < E.screencols;x++){
             //For printing score
             if(y == 0 && x < scoreSize)continue;
             //End message
@@ -236,7 +236,7 @@ void snakeMove(){
         return;
     }
     //Collision detection
-    for(int i = 1;i < E.snakeSize - 1;i++){
+    for(int i = 1;i < E.snakeSize;i++){
         if(E.snakeArr[i].x == *headX && E.snakeArr[i].y == *headY){
             E.isDead = true;
             return;
